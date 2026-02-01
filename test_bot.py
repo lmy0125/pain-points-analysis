@@ -28,9 +28,12 @@ class TestLLMProcessor(unittest.TestCase):
     def test_processor_initialization(self, mock_openai):
         """Test that LLMProcessor initializes correctly."""
         from llm_processor import LLMProcessor
+        import os
         
-        processor = LLMProcessor()
-        self.assertIsNotNone(processor.client)
+        # Mock API key present
+        with patch.dict(os.environ, {'OPENAI_API_KEY': 'test_key'}):
+            processor = LLMProcessor()
+            self.assertIsNotNone(processor.client)
     
     def test_categorize_empty_posts(self):
         """Test categorization with empty post list."""
@@ -53,9 +56,12 @@ class TestReportGenerator(unittest.TestCase):
     def test_generator_initialization(self, mock_openai):
         """Test that ReportGenerator initializes correctly."""
         from report_generator import ReportGenerator
+        import os
         
-        generator = ReportGenerator()
-        self.assertIsNotNone(generator.client)
+        # Mock API key present
+        with patch.dict(os.environ, {'OPENAI_API_KEY': 'test_key'}):
+            generator = ReportGenerator()
+            self.assertIsNotNone(generator.client)
     
     @patch('report_generator.OpenAI')
     def test_generate_report_structure(self, mock_openai):
