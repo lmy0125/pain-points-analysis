@@ -17,7 +17,8 @@ class ReportGenerator:
     
     def __init__(self):
         """Initialize OpenAI client."""
-        self.client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+        api_key = os.getenv('OPENAI_API_KEY')
+        self.client = OpenAI(api_key=api_key) if api_key else None
         self.model = "gpt-4o-mini"
     
     def generate_report(self, categorized_posts: Dict[str, List[Dict]]) -> Dict:
@@ -63,6 +64,10 @@ class ReportGenerator:
         """Use LLM to identify top 5 common hurdles from problems."""
         if not problems:
             return []
+        
+        # Use fallback if no API key
+        if not self.client:
+            return self._fallback_hurdle_analysis(problems)
         
         # Prepare problems for analysis
         problems_text = []

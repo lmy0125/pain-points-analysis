@@ -16,7 +16,8 @@ class LLMProcessor:
     
     def __init__(self):
         """Initialize OpenAI client."""
-        self.client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+        api_key = os.getenv('OPENAI_API_KEY')
+        self.client = OpenAI(api_key=api_key) if api_key else None
         self.model = "gpt-4o-mini"
     
     def categorize_posts(self, posts: List[Dict]) -> Dict[str, List[Dict]]:
@@ -52,6 +53,20 @@ class LLMProcessor:
     
     def _process_batch(self, batch: List[Dict], categorized: Dict[str, List[Dict]]):
         """Process a batch of posts."""
+        # Use fallback if no API key
+        if not self.client:
+            for post in batch:
+                title_lower = post['title'].lower()
+                if any(word in title_lower for word in ['problem', 'issue', 'struggling', 'difficult', 'challenge']):
+                    categorized['Problems'].append(post)
+                elif '?' in post['title']:
+                    categorized['Questions'].append(post)
+                elif any(word in title_lower for word in ['success', 'achieved', 'milestone', 'revenue', 'growth']):
+                    categorized['Success Stories'].append(post)
+                else:
+                    categorized['Questions'].append(post)
+            return
+        
         # Prepare posts for LLM
         posts_text = []
         for idx, post in enumerate(batch):

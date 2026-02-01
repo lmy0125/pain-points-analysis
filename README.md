@@ -58,6 +58,16 @@ DAYS_BACK=7
 
 ## Usage
 
+### Quick Demo (No API Keys Required)
+
+Run the demo with mock data to see how the bot works:
+
+```bash
+python demo.py
+```
+
+This will generate a sample report using mock Reddit posts.
+
 ### Run Once (for testing)
 
 ```bash
@@ -93,6 +103,8 @@ pain-points-analysis/
 ├── reddit_extractor.py     # Reddit API extraction module
 ├── llm_processor.py        # LLM categorization module
 ├── report_generator.py     # Report synthesis module
+├── demo.py                 # Demo script with mock data
+├── test_bot.py             # Unit tests
 ├── requirements.txt        # Python dependencies
 ├── .env.example           # Environment variables template
 ├── .gitignore            # Git ignore rules
@@ -145,6 +157,34 @@ TOP 5 COMMON HURDLES
 | `MAX_POSTS` | 100 | Maximum posts to analyze |
 | `DAYS_BACK` | 7 | Number of days to look back |
 | `OPENAI_API_KEY` | - | OpenAI API key |
+
+## Testing
+
+Run the test suite:
+
+```bash
+python -m unittest test_bot.py -v
+```
+
+## How It Works
+
+1. **Extraction Phase**: 
+   - Connects to Reddit API using PRAW library
+   - Fetches top posts from configured subreddits
+   - Filters posts from the last N days
+   - Sorts by score and limits to MAX_POSTS
+
+2. **Processing Phase**:
+   - Sends post batches to OpenAI GPT-4
+   - LLM categorizes each post as Problem, Question, or Success Story
+   - Extracts key issues from each post
+   - Falls back to keyword-based categorization if LLM fails
+
+3. **Synthesis Phase**:
+   - Analyzes all problems to identify common patterns
+   - Uses LLM to synthesize top 5 recurring hurdles
+   - Generates structured report with statistics
+   - Saves report as JSON and formats as readable text
 
 ## License
 
